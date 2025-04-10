@@ -23,8 +23,27 @@ gdalbuildvrt -overwrite -srcnodata -9999 -vrtnodata -9999 ${vrtfile} ${INPUT_DIR
 gdalwarp -r cubicspline -t_srs EPSG:3857 -dstnodata 0 -co COMPRESS=DEFLATE ${vrtfile} ${vrtfile2}
 
 
-# Process zoom levels one by one
-for z in $(seq $MINZOOM $MAXZOOM); do
+# Process lower zoom levels in parallel (0-5)
+echo "Processing zoom levels 0-5 in parallel..."
+for z in $(seq $MINZOOM 5); do
+    echo "Starting zoom level ${z} in background..."
+    temp_mbtiles=${OUTPUT_DIR}/temp_z${z}.mbtiles
+    
+    # Process this zoom level in background
+    rio rgbify -vvv -b -10000 -i 0.1 --min-z $z --max-z $z -j $THREADS --format $FORMAT ${vrtfile2} ${temp_mbtiles} &
+done
+
+# Wait for all background processes to complete
+echo "Waiting for all lower zoom levels to complete..."
+wait
+echo "All lower zoom levels completed."
+
+# Clear caches to release memory
+echo "Clearing memory caches..."
+echo 3 > /proc/sys/vm/drop_caches || true
+
+# Process higher zoom levels one at a time (6-11)
+for z in $(seq 6 $MAXZOOM); do
     echo "Processing zoom level ${z}..."
     temp_mbtiles=${OUTPUT_DIR}/temp_z${z}.mbtiles
     
