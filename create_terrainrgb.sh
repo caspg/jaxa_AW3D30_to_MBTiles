@@ -21,7 +21,7 @@ vrtfile2=${OUTPUT_DIR}/${BASENAME}_warp.vrt
 #rm rio/*
 gdalbuildvrt -overwrite -srcnodata -9999 -vrtnodata -9999 ${vrtfile} ${INPUT_DIR}/*_DSM.tif
 gdalwarp -r cubicspline -t_srs EPSG:3857 -dstnodata 0 -co COMPRESS=DEFLATE ${vrtfile} ${vrtfile2}
-rio rgbify -b -10000 -i 0.1 --min-z $MINZOOM --max-z $MAXZOOM -j $THREADS --format $FORMAT ${vrtfile2} ${mbtiles}
+rio rgbify --verbose -b -10000 -i 0.1 --min-z $MINZOOM --max-z $MAXZOOM -j $THREADS --format $FORMAT ${vrtfile2} ${mbtiles}
 
 #sqlite3 ${mbtiles} 'CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row);' #not needed with my custom rio-rgbify
 #sqlite3 ${mbtiles} 'PRAGMA journal_mode=DELETE;' #not needed with my custom rio-rgbify
