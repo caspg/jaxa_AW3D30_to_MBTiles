@@ -32,7 +32,7 @@ export -f mycurl myunzip
 cd download
 
 # run curl in parallel using 8 thread/connection
-xargs -P 8 -I {} bash -c "mycurl '{}'" < ../file_list_zip_veloplanner.txt
+xargs -P 8 -I {} bash -c "mycurl '{}'" < ../file_list_zip_poland.txt
 
 #unzip the DSM tif files
 ls -1 | xargs -P 8 -I {} bash -c "myunzip '{}'"

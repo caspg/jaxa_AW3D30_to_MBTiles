@@ -37,3 +37,9 @@ screen -r terrainrgb
 
 #To detach from screen: Ctrl+A followed by D
 ```
+
+Create single zoom level (it will be just temp file that should be merged)
+
+```bash
+screen -S terrainrgb -L -Logfile logs.txt -d -m bash -c "docker run -ti -v $PWD:$PWD -w $PWD --rm terrain:latest ./create_terrainrgb_single_zoom_mbtiles 12"
+```
